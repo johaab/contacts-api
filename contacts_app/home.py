@@ -25,3 +25,8 @@ def index():
     ).fetchall()
     return render_template('home/home.html', contact=contact, skills=skills)
 
+
+@bp.route('/surprise')
+def easter_egg():
+    return render_template('surprise/easter_egg.html')
+

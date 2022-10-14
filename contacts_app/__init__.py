@@ -25,9 +25,9 @@ def create_app(test_config=None):
         pass
 
     # a simple page that says hello
-    @app.route('/easteregg')
+    @app.route('/hello')
     def surprise():
-        return 'Congratulations, you found an Easter Egg!'
+        return 'Hello world!'
 
     # register database
     db.init_app(app)
