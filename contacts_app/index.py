@@ -23,7 +23,7 @@ def index():
         ' WHERE s.user_id = ?',
         (user_id,)
     ).fetchall()
-    return render_template('home/home.html', contact=contact, skills=skills)
+    return render_template('index/index.html', contact=contact, skills=skills)
 
 
 @bp.route('/surprise')
