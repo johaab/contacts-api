@@ -9,47 +9,45 @@ from contacts_app.db import get_db
 bp = Blueprint('contacts', __name__, url_prefix='/contacts')
 
 
-@bp.route('/create', methods=('GET', 'POST'))
+@bp.route('/create', methods='POST')
 @login_required
 def create():
-    if request.method == 'POST':
-        firstname = request.form['firstname']
-        lastname = request.form['lastname']
-        address = request.form['address']
-        email = request.form['email']
-        phone = request.form['phone']
-        fullname = ' '.join([str(firstname), str(lastname)])
-        error = None
+    firstname = request.form['firstname']
+    lastname = request.form['lastname']
+    address = request.form['address']
+    email = request.form['email']
+    phone = request.form['phone']
+    fullname = ' '.join([str(firstname), str(lastname)])
+    error = None
 
-        # TODO: more check of input formats
-        if not firstname:
-            error = 'First name is required.'
-        if not lastname:
-            error = 'Last name is required.'
-        if not address:
-            error = 'Address is required.'
-        if not email:
-            error = 'Email address is required.'
-        if not phone:
-            error = 'Phone number is required.'
-        elif not phone.isdecimal():
-            error = 'Unexpected phone number format'
+    if not firstname:
+        error = 'First name is required.'
+    if not lastname:
+        error = 'Last name is required.'
+    if not address:
+        error = 'Address is required.'
+    if not email:
+        error = 'Email address is required.'
+    if not phone:
+        error = 'Phone number is required.'
+    elif not phone.isdecimal():
+        error = 'Unexpected phone number format'
 
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'INSERT INTO contacts (firstname, lastname, fullname, address, email, phone, user_id)'
-                ' VALUES (?, ?, ?, ?, ?, ?, ?)',
-                (firstname, lastname, fullname, address, email, phone, g.user['id'])
-            )
-            db.commit()
-            return redirect(url_for('index'))
-
-    return render_template('contacts/create.html')
+    if error is not None:
+        flash(error)
+    else:
+        db = get_db()
+        db.execute(
+            'INSERT INTO contacts (firstname, lastname, fullname, address, email, phone, user_id)'
+            ' VALUES (?, ?, ?, ?, ?, ?, ?)',
+            (firstname, lastname, fullname, address, email, phone, g.user['id'])
+        )
+        db.commit()
+        return redirect(url_for('index'))
 
 
+@bp.route('/read', methods='GET')
+@login_required
 def read(id, check_author=True):
     # input id is the contact id
     contact_info = get_db().execute(
@@ -68,12 +66,11 @@ def read(id, check_author=True):
     return contact_info
 
 
-@bp.route('contacts/<int:id>/update', methods=('GET', 'POST'))
+@bp.route('contacts/<int:id>/update', methods='POST')
 @login_required
 def update(id):
     contact_info = read(id)
 
-    if request.method == 'POST':
         firstname = request.form['firstname']
         lastname = request.form['lastname']
         fullname = ' '.join([firstname, lastname])
