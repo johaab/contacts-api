@@ -20,6 +20,7 @@
                 <li>Email address: {{ contact['email'] }}</li>
                 <li>Phone number: {{ contact['phone'] }}</li>
             </ul>
+            <a class="action" href="{{ url_for('contacts.update', id=contact['id']) }}">Edit</a>
         {% else %}
             <a class="action" href="{{ url_for('contacts.create') }}">Add contact information</a>
         {% endif %}

@@ -1,20 +1,25 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Edit {{ g.user['username'] }} skills{% endblock %}</h1>
+  <h1>{% block title %}Edit {{ g.user['username'] }} contact information{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
   <form method="post">
-    <label for="name">Skill name</label>
-    <input name="name" id="name"
-           value="{{ request.form['name'] or skill['name']}}" required>
-    <label for="level">Skill level</label>
-    <input name="level" id="level"
-           value="{{ request.form['level'] or skill['level']}}" required>
+    <label for="firstname">First name</label>
+    <input name="firstname" id="firstname" value="{{ request.form['firstname'] or contact['firstname'] }}" required>
+    <label for="lastname">First name</label>
+    <input name="lastname" id="lastname" value="{{ request.form['lastname'] or contact['lastname'] }}" required>
+    <label for="address">Address</label>
+    <input name="address" id="address" value="{{ request.form['address'] or contact['address'] }}" required>
+    <label for="email">Email address</label>
+    <input name="email" id="email" value="{{ request.form['email'] or contact['email'] }}" required>
+    <label for="phone">Phone number</label>
+    <input name="phone" id="phone" value="{{ request.form['phone'] or contact['phone'] }}" required>
+    <input type="submit" value="Save">
   </form>
   <hr>
-  <form action="{{ url_for('skills.delete', id=skill['id']) }}" method="post">
+  <form action="{{ url_for('contacts.delete', id=contact['id']) }}" method="post">
     <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
   </form>
 {% endblock %}

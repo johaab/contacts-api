@@ -53,8 +53,8 @@ def create():
 def read(id, check_author=True):
     # input id is the contact id
     contact_info = get_db().execute(
-        'SELECT c.id, username, firstname, lastname, fullname, address, email, phone,'
-        ' FROM contacts c JOIN user u ON c.user_id = u.id'
+        'SELECT c.id, username, firstname, lastname, fullname, address, email, phone, user_id'
+        ' FROM contacts c JOIN user u ON user_id = u.id'
         ' WHERE c.id = ?',
         (id,)
     ).fetchone()
@@ -78,8 +78,8 @@ def update(id):
         lastname = request.form['lastname']
         fullname = ' '.join([firstname, lastname])
         address = request.form['address']
-        email = request.form('email')
-        phone = request.form('phone')
+        email = request.form['email']
+        phone = request.form['phone']
         error = None
 
         if not firstname:
@@ -98,14 +98,14 @@ def update(id):
         else:
             db = get_db()
             db.execute(
-                'UPDATE post SET firstname = ?, lastname = ?, fullname = ?, address = ?, email = ?, phone = ?, user_id = ?'
+                'UPDATE contacts SET firstname = ?, lastname = ?, fullname = ?, address = ?, email = ?, phone = ?'
                 ' WHERE id = ?',
-                (firstname, lastname, fullname, address, email, phone, g.user['id'], id)
+                (firstname, lastname, fullname, address, email, phone, id)
             )
             db.commit()
             return redirect(url_for('index'))
 
-    return render_template('contacts/update.html', post=contact_info)
+    return render_template('contacts/update.html', contact=contact_info)
 
 
 @bp.route('contacts/<int:id>/delete', methods=('POST',))

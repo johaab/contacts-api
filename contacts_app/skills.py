@@ -45,9 +45,9 @@ def create():
 def read(id, check_author=True):
     # input id is the skill id
     skill_info = get_db().execute(
-        'SELECT s.id, name, level, user_id'
-        ' FROM skills s JOIN user u ON s.user_id = u.id'
-        ' WHERE s.id = ?',
+        'SELECT id, name, level, user_id'
+        ' FROM skills'
+        ' WHERE id = ?',
         (id,)
     ).fetchone()
 
@@ -63,9 +63,9 @@ def read(id, check_author=True):
 def read_all(id, check_author=True):
     # input id is the user id
     skills_info = get_db().execute(
-        'SELECT s.id, name, level'
-        ' FROM skills s JOIN user u ON s.user_id = u.id'
-        ' WHERE s.user_id = ?',
+        'SELECT id, name, level'
+        ' FROM skills'
+        ' WHERE user_id = ?',
         (id,)
     ).fetchall()
 
@@ -99,9 +99,9 @@ def update(id):
         else:
             db = get_db()
             db.execute(
-                'UPDATE skills SET level = ?, user_id = ?'
+                'UPDATE skills SET level = ?'
                 ' WHERE id = ?',
-                (level, g.user['id'], id)
+                (level, id)
             )
             db.commit()
             return redirect(url_for('index'))
