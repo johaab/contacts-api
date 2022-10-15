@@ -9,7 +9,7 @@ from contacts_app.db import get_db
 bp = Blueprint('contacts', __name__, url_prefix='/contacts')
 
 
-@bp.route('/create', methods='POST')
+@bp.route('/create', methods=('POST',))
 @login_required
 def create():
     firstname = request.form['firstname']
@@ -46,14 +46,14 @@ def create():
         return redirect(url_for('index'))
 
 
-@bp.route('/read', methods='GET')
+@bp.route('/read', methods=('GET',))
 @login_required
 def read(id, check_author=True):
     # input id is the contact id
     contact_info = get_db().execute(
-        'SELECT c.id, username, firstname, lastname, fullname, address, email, phone,'
-        ' FROM contacts c JOIN user u ON c.user_id = u.id'
-        ' WHERE c.id = ?',
+        'SELECT id, username, firstname, lastname, fullname, address, email, phone,'
+        ' FROM contacts'
+        ' WHERE id = ?',
         (id,)
     ).fetchone()
 
@@ -66,43 +66,41 @@ def read(id, check_author=True):
     return contact_info
 
 
-@bp.route('contacts/<int:id>/update', methods='POST')
+@bp.route('contacts/<int:id>/update', methods=('POST',))
 @login_required
 def update(id):
-    contact_info = read(id)
+    firstname = request.form['firstname']
+    lastname = request.form['lastname']
+    fullname = ' '.join([firstname, lastname])
+    address = request.form['address']
+    email = request.form('email')
+    phone = request.form('phone')
+    error = None
 
-        firstname = request.form['firstname']
-        lastname = request.form['lastname']
-        fullname = ' '.join([firstname, lastname])
-        address = request.form['address']
-        email = request.form('email')
-        phone = request.form('phone')
-        error = None
+    if not firstname:
+        error = 'First name is required.'
+    if not lastname:
+        error = 'Last name is required.'
+    if not address:
+        error = 'Address is required.'
+    if not email:
+        error = 'Email address is required.'
+    if not phone:
+        error = 'Phone number is required.'
 
-        if not firstname:
-            error = 'First name is required.'
-        if not lastname:
-            error = 'Last name is required.'
-        if not address:
-            error = 'Address is required.'
-        if not email:
-            error = 'Email address is required.'
-        if not phone:
-            error = 'Phone number is required.'
+    if error is not None:
+        flash(error)
+    else:
+        db = get_db()
+        db.execute(
+            'UPDATE post SET firstname = ?, lastname = ?, fullname = ?, address = ?, email = ?, phone = ?'
+            ' WHERE id = ?',
+            (firstname, lastname, fullname, address, email, phone, id)
+        )
+        db.commit()
+        return redirect(url_for('index'))
 
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'UPDATE post SET firstname = ?, lastname = ?, fullname = ?, address = ?, email = ?, phone = ?, user_id = ?'
-                ' WHERE id = ?',
-                (firstname, lastname, fullname, address, email, phone, g.user['id'], id)
-            )
-            db.commit()
-            return redirect(url_for('index'))
-
-    return render_template('contacts/update.html', post=contact_info)
+    return
 
 
 @bp.route('contacts/<int:id>/delete', methods=('POST',))
