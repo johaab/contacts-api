@@ -1,0 +1,4 @@
+include contacts_app/schema.sql
+graft contacts_app/static
+graft contacts_app/templates
+global-exclude *.pyc
