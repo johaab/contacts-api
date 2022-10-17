@@ -23,10 +23,11 @@ def index():
         ' WHERE s.user_id = ?',
         (user_id,)
     ).fetchall()
-    return render_template('index/index.html', contact=contact, skills=skills)
+
+    return "index"
 
 
 @bp.route('/surprise')
 def easter_egg():
-    return render_template('surprise/easter_egg.html')
+    return "You found an Easter Egg, congrats!"
 

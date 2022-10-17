@@ -33,9 +33,9 @@ def register():
         except db.IntegrityError:
             error = f"User {username} is already registered."
         else:
-            return redirect(url_for('login'))
+            return "Successfully registered"
 
-    flash(error)
+    return error
 
 
 @bp.route('/login', methods=('POST',))
@@ -57,9 +57,9 @@ def login():
         # session is a dict that stores data across requests
         session.clear()
         session['user_id'] = user['id']
-        return redirect(url_for('index'))
+        return "Successfully logged in"
 
-    flash(error)
+    return error
 
 
 @bp.before_app_request
@@ -77,7 +77,7 @@ def load_logged_in_user():
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return "Successfully logged out"
 
 
 # decorator to make sure
@@ -86,7 +86,7 @@ def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return redirect(url_for('auth.login'))
+            return "Please log in"
 
         return view(**kwargs)
 
