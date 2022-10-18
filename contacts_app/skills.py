@@ -28,37 +28,6 @@ def create():
     return render_template('skills/create.html', form=form)
 
 
-def create_old():
-    if request.method == 'POST':
-        name = request.form['name']
-        level = request.form['level']
-        error = None
-
-        skill_levels = ['Beginner', 'Intermediate', 'Advanced', 'Expert']
-        if not name:
-            error = 'Skill name is required.'
-        if not level:
-            error = 'Skill level is required.'
-        elif level.capitalize() not in skill_levels:
-            error = "Expected skill levels are: " + ', '.join(skill_levels)
-        name = name.capitalize()
-        level = level.capitalize()
-
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'INSERT INTO skills (name, level, user_id)'
-                ' VALUES (?, ?, ?)',
-                (name, level, g.user['id'])
-            )
-            db.commit()
-            return redirect(url_for('index'))
-
-    return render_template('skills/create.html')
-
-
 def read(id, check_author=True):
     # input id is the skill id
     skill_info = get_db().execute(
@@ -112,35 +81,6 @@ def update(id):
             return redirect(url_for('index'))
 
     return render_template('skills/update.html', skill=skill_info, form=form)
-
-
-def update_old(id):
-    skill_info = read(id)
-
-    if request.method == 'POST':
-        level = request.form['level']
-        error = None
-
-        skill_levels = ['Beginner', 'Intermediate', 'Advanced', 'Expert']
-        if not level:
-            error = 'Skill level is required.'
-        elif level.capitalize() not in skill_levels:
-            error = "Expected skill levels are: " + ', '.join(skill_levels)
-        level = level.capitalize()
-
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'UPDATE skills SET level = ?'
-                ' WHERE id = ?',
-                (level, id)
-            )
-            db.commit()
-            return redirect(url_for('index'))
-
-    return render_template('skills/update.html', skill=skill_info)
 
 
 @bp.route('skills/<int:id>/delete', methods=('POST',))

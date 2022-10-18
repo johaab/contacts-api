@@ -30,45 +30,6 @@ def create():
     return render_template('contacts/create.html', form=form)
 
 
-def create_old():
-    if request.method == 'POST':
-        firstname = request.form['firstname']
-        lastname = request.form['lastname']
-        address = request.form['address']
-        email = request.form['email']
-        phone = request.form['phone']
-        fullname = ' '.join([str(firstname), str(lastname)])
-        error = None
-
-        # TODO: more check of input formats
-        if not firstname:
-            error = 'First name is required.'
-        if not lastname:
-            error = 'Last name is required.'
-        if not address:
-            error = 'Address is required.'
-        if not email:
-            error = 'Email address is required.'
-        if not phone:
-            error = 'Phone number is required.'
-        elif not phone.isdecimal():
-            error = 'Unexpected phone number format'
-
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'INSERT INTO contacts (firstname, lastname, fullname, address, email, phone, user_id)'
-                ' VALUES (?, ?, ?, ?, ?, ?, ?)',
-                (firstname, lastname, fullname, address, email, phone, g.user['id'])
-            )
-            db.commit()
-            return redirect(url_for('index'))
-
-    return render_template('contacts/create.html')
-
-
 def read(id, check_author=True):
     # input id is the contact id
     contact_info = get_db().execute(
@@ -109,45 +70,6 @@ def update(id):
             return redirect(url_for('index'))
 
     return render_template('contacts/update.html', contact=contact_info, form=form)
-
-
-def update_old(id):
-    contact_info = read(id)
-
-    if request.method == 'POST':
-        firstname = request.form['firstname']
-        lastname = request.form['lastname']
-        fullname = ' '.join([firstname, lastname])
-        address = request.form['address']
-        email = request.form['email']
-        phone = request.form['phone']
-        error = None
-
-        if not firstname:
-            error = 'First name is required.'
-        if not lastname:
-            error = 'Last name is required.'
-        if not address:
-            error = 'Address is required.'
-        if not email:
-            error = 'Email address is required.'
-        if not phone:
-            error = 'Phone number is required.'
-
-        if error is not None:
-            flash(error)
-        else:
-            db = get_db()
-            db.execute(
-                'UPDATE contacts'
-                ' SET firstname = ?, lastname = ?, fullname = ?, address = ?, email = ?, phone = ?'
-                ' WHERE id = ?',
-                (firstname, lastname, fullname, address, email, phone, id)
-            )
-            db.commit()
-            return redirect(url_for('index'))
-
-    return render_template('contacts/update.html', contact=contact_info)
 
 
 @bp.route('contacts/<int:id>/delete', methods=('POST',))
