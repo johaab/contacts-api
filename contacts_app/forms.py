@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, TelField, RadioField, validators
+from wtforms import StringField, EmailField, TelField, RadioField, PasswordField, validators
 from wtforms.validators import DataRequired, InputRequired, ValidationError, StopValidation
 from werkzeug.security import check_password_hash
 import phonenumbers
@@ -122,15 +122,15 @@ class ContactsForm(FlaskForm):
 
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), AvailableUsername()])
-    password = StringField('Password', validators=[InputRequired(),
+    password = PasswordField('Password', validators=[InputRequired(),
                                                    validators.EqualTo('confirm_pw', message='Passwords must match'),
                                                    validators.Length(min=8)])
-    confirm_pw = StringField('Repeat password', validators=[InputRequired()])
+    confirm_pw = PasswordField('Repeat password', validators=[InputRequired()])
 
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), ExistingUsername()])
-    password = StringField('Password', validators=[InputRequired(), CheckPassword()])
+    password = PasswordField('Password', validators=[InputRequired(), CheckPassword()])
 
 
 class SkillsForm(FlaskForm):

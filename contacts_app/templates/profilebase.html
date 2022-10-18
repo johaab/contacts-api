@@ -16,15 +16,15 @@
 </nav>
 <section class="content">
   <header>
-    {% block contactsheader %}{% endblock %}
+    {% block header %}{% endblock %}
   </header>
   {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
   {% endfor %}
-  {% block contactscontent %}{% endblock %}
+  {% block content %}{% endblock %}
 
   <header>
-    {% block skillsheader %}{% endblock %}
+    {% block header2 %}{% endblock %}
   </header>
-  {% block skillscontent %}{% endblock %}
+  {% block content2 %}{% endblock %}
 </section>

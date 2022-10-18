@@ -50,7 +50,7 @@ def read(id, check_author=True):
     return contact_info
 
 
-@bp.route('contacts/<int:id>/update', methods=('GET', 'POST'))
+@bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def update(id):
     form = ContactsForm()
@@ -67,12 +67,12 @@ def update(id):
                 (form.firstname.data, form.lastname.data, fullname, form.address.data, form.email.data, form.phone.data, id)
             )
             db.commit()
-            return redirect(url_for('index'))
+            return redirect(url_for('index.profile', id=g.user['id']))
 
     return render_template('contacts/update.html', contact=contact_info, form=form)
 
 
-@bp.route('contacts/<int:id>/delete', methods=('POST',))
+@bp.route('/<int:id>/delete', methods=('POST',))
 @login_required
 def delete(id):
     read(id)

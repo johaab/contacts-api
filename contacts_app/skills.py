@@ -20,7 +20,7 @@ def create():
             db.execute(
                 'INSERT INTO skills (name, level, user_id)'
                 ' VALUES (?, ?, ?)',
-                (form.name.data, form.level.data, g.user['id'])
+                (form.name.data.capitalize(), form.level.data, g.user['id'])
             )
             db.commit()
             return redirect(url_for('index'))
@@ -64,7 +64,7 @@ def read_all(id, check_author=True):
     return skills_info
 
 
-@bp.route('skills/<int:id>/update', methods=('GET', 'POST'))
+@bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def update(id):
     skill_info = read(id)
@@ -75,15 +75,15 @@ def update(id):
             db.execute(
                 'UPDATE skills SET level = ?'
                 ' WHERE id = ?',
-                (form.level.data, id)
+                (form.level.data.capitalize(), id)
             )
             db.commit()
-            return redirect(url_for('index'))
+            return redirect(url_for('index.profile', id=g.user['id']))
 
     return render_template('skills/update.html', skill=skill_info, form=form)
 
 
-@bp.route('skills/<int:id>/delete', methods=('POST',))
+@bp.route('/<int:id>/delete', methods=('POST',))
 @login_required
 def delete(id):
     read(id)
