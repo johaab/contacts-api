@@ -33,7 +33,6 @@ def login():
     form = LoginForm()
     if request.method == 'POST':
         if form.validate_on_submit():
-            error = None
             db = get_db()
             user = db.execute(
                 'SELECT * FROM user '

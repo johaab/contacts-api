@@ -1,5 +1,4 @@
-{% extends 'base.html' %}
-
+{% extends 'homebase.html' %}
 
 {% block contactsheader %}
     <h1>{% block title %}Contacts resources{% endblock %}</h1>
@@ -11,7 +10,7 @@
               {% for column in contacts_columns %}
                 <th>{{ column }}</th>
               {% endfor %}
-        </tr>
+          </tr>
     {% for contact in contacts %}
         <tr>
             {% for info in contact[:-1] %}

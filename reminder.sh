@@ -8,3 +8,10 @@ pip install -r requirements.txt
 flask --app contacts_app init-db
 # run application
 flask --app contacts_app run
+
+# install (editable mode)
+pip install -e .
+
+# create test db and run tests
+touch tests/data.sql
+pytest
