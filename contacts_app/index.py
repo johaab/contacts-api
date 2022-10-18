@@ -12,14 +12,18 @@ def index():
     user_id = session.get('user_id')
     contact = db.execute(
         'SELECT c.id, username, firstname, lastname, fullname, address, email, phone'
-        ' FROM contacts c JOIN user u ON c.user_id = u.id'
+        ' FROM contacts c'
+        ' JOIN user u'
+        ' ON c.user_id = u.id'
         ' WHERE c.user_id = ?',
         (user_id,)
     ).fetchone()
 
     skills = db.execute(
         'SELECT s.id, name, level'
-        ' FROM skills s JOIN user u ON s.user_id = u.id'
+        ' FROM skills s'
+        ' JOIN user u'
+        ' ON s.user_id = u.id'
         ' WHERE s.user_id = ?',
         (user_id,)
     ).fetchall()

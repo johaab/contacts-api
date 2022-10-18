@@ -5,6 +5,7 @@ from werkzeug.exceptions import abort
 
 from contacts_app.auth import login_required
 from contacts_app.db import get_db
+from contacts_app.forms import SkillsForm
 
 bp = Blueprint('skills', __name__, url_prefix='/skills')
 
@@ -12,6 +13,22 @@ bp = Blueprint('skills', __name__, url_prefix='/skills')
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
+    form = SkillsForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            db = get_db()
+            db.execute(
+                'INSERT INTO skills (name, level, user_id)'
+                ' VALUES (?, ?, ?)',
+                (form.name.data, form.level.data, g.user['id'])
+            )
+            db.commit()
+            return redirect(url_for('index'))
+
+    return render_template('skills/create.html', form=form)
+
+
+def create_old():
     if request.method == 'POST':
         name = request.form['name']
         level = request.form['level']
@@ -82,6 +99,23 @@ def read_all(id, check_author=True):
 @login_required
 def update(id):
     skill_info = read(id)
+    form = SkillsForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            db = get_db()
+            db.execute(
+                'UPDATE skills SET level = ?'
+                ' WHERE id = ?',
+                (form.level.data, id)
+            )
+            db.commit()
+            return redirect(url_for('index'))
+
+    return render_template('skills/update.html', skill=skill_info, form=form)
+
+
+def update_old(id):
+    skill_info = read(id)
 
     if request.method == 'POST':
         level = request.form['level']
@@ -114,7 +148,9 @@ def update(id):
 def delete(id):
     read(id)
     db = get_db()
-    db.execute('DELETE FROM skills WHERE id = ?', (id,))
+    db.execute('DELETE FROM skills'
+               ' WHERE id = ?',
+               (id,))
     db.commit()
     return redirect(url_for('index'))
 

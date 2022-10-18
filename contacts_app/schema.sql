@@ -16,7 +16,7 @@ CREATE TABLE contacts (
   fullname TEXT NOT NULL,
   address TEXT NOT NULL,
   email TEXT NOT NULL,
-  phone INTEGER NOT NULL
+  phone TEXT NOT NULL
 );
 
 CREATE TABLE skills (
