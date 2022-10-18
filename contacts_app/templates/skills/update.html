@@ -6,9 +6,20 @@
 
 {% block content %}
   <form method="post">
-    <label for="level">Level</label>
-    <input name="level" id="level"
-           value="{{ request.form['level'] or skill['level'] }}" required>
+    {{ form.csrf_token }}
+    <p hidden>{{form.name(value=skill['name'])}}</p>
+    <p>
+        {{ form.level.label }}
+        {{ form.level(size=20) }}
+    </p>
+    {% if form.level.errors %}
+      <ul class="errors">
+          {% for error in form.level.errors %}
+              <li>{{ error }}</li>
+          {% endfor %}
+      </ul>
+    {% endif %}
+
     <input type="submit" value="Save">
   </form>
   <hr>
