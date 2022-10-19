@@ -2,10 +2,20 @@ import pytest
 from flask import g, session
 from contacts_app.db import get_db
 
+#from contacts_app.forms import RegisterForm
+#from wtforms_test import FormTestCase
+#
+#class TestRegisterForm(FormTestCase):
+#    form_class = RegisterForm
+#
+#    def test_username_is_required(self):
+#        self.assert_required('username')
+
+
 def test_register(client, app):
     assert client.get('/auth/register').status_code == 200
     response = client.post(
-        '/auth/register', data={'username': 'a', 'password': 'a'}
+        '/auth/register', data={'username': 'a', 'password': 'aaaaaaaaa', 'confirm_pw': 'aaaaaaaaa'}
     )
     assert response.headers["Location"] == "/auth/login"
 
