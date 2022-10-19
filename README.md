@@ -1,4 +1,4 @@
-# contacts-api
+# Contacts API
 Web-API Developper Challenge OpenWT
 
 # Installation
