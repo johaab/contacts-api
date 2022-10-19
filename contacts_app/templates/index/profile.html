@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+
+{% block header %}
+    <h1>{% block title %}{{contact['fullname']}}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <h2>{% block contact %}Contact information{% endblock %}</h2>
+    {% if contact %}
+        <ul>
+            <li>First name: {{ contact['firstname'] }}</li>
+            <li>Last name: {{ contact['lastname'] }}</li>
+            <li>Address: {{ contact['address'] }}</li>
+            <li>Email address: {{ contact['email'] }}</li>
+            <li>Phone number: {{ contact['phone'] }}</li>
+        </ul>
+        {% if g.user['id'] == profileid %}
+            <a class="action" href="{{ url_for('contacts.update', id=g.user['id']) }}">Edit</a>
+        {% endif %}
+    {% else %}
+        {% if g.user['id'] == profileid %}
+            <a class="action" href="{{ url_for('contacts.create') }}">Add contact information</a>
+        {% endif %}
+    {% endif %}
+
+    <h2>{% block skill %}Skills{% endblock %}</h2>
+    {% if g.user['id'] == profileid %}
+        <a class="action" href="{{ url_for('skills.create') }}">Add skills</a>
+    {% endif %}
+    {% for skill in skills %}
+        <h3>{{ skill['name'] }}</h3>
+        <p>Level: {{ skill['level'] }}</p>
+        {% if g.user['id'] == profileid %}
+            <a class="action" href="{{ url_for('skills.update', id=skill['id']) }}">Edit</a>
+        {% endif %}
+    {% endfor %}
+{% endblock %}

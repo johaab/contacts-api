@@ -1,0 +1,45 @@
+{% extends 'homebase.html' %}
+
+{% block contactsheader %}
+    <h1>{% block title %}Contacts resources{% endblock %}</h1>
+{% endblock %}
+
+{% block contactscontent %}
+    <table>
+          <tr>
+              {% for column in contacts_columns %}
+                <th>{{ column }}</th>
+              {% endfor %}
+          </tr>
+    {% for contact in contacts %}
+        <tr>
+            {% for info in contact[:-1] %}
+            <td>{{ info }}</td>
+            {% endfor %}
+            <td><a href="{{ url_for('index.profile', id=contact['id']) }}"> Link </a></td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}
+
+{% block skillsheader %}
+        <h1>{% block title2 %}Skills resources{% endblock %}</h1>
+{% endblock %}
+
+{% block skillscontent %}
+    <table>
+        <tr>
+              {% for column in skills_columns %}
+                <th>{{ column }}</th>
+              {% endfor %}
+        </tr>
+        {% for skill in skills %}
+            <tr>
+                {% for info in skill[:-1] %}
+                <td>{{ info }}</td>
+                {% endfor %}
+                <td><a href="{{ url_for('index.profile', id=skill['id']) }}">Link</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

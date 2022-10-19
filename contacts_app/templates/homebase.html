@@ -1,4 +1,7 @@
 <!doctype html>
+<style>
+  tr:hover {background-color: #D6EEEE;}
+</style>
 <title>{% block title %}{% endblock %} - My Amazing Contacts App</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <nav>
@@ -16,15 +19,15 @@
 </nav>
 <section class="content">
   <header>
-    {% block header %}{% endblock %}
+    {% block contactsheader %}{% endblock %}
   </header>
   {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
   {% endfor %}
-  {% block content %}{% endblock %}
+  {% block contactscontent %}{% endblock %}
 
   <header>
-    {% block header2 %}{% endblock %}
+    {% block skillsheader %}{% endblock %}
   </header>
-  {% block content2 %}{% endblock %}
+  {% block skillscontent %}{% endblock %}
 </section>

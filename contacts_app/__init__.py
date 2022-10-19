@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from . import db, auth, contacts, skills, home
+from . import db, auth, contacts, skills, index
 
 
 def create_app(test_config=None):
@@ -26,7 +26,7 @@ def create_app(test_config=None):
 
     # a simple page that says hello
     @app.route('/hello')
-    def surprise():
+    def hello():
         return 'Hello world!'
 
     # register database
@@ -36,7 +36,7 @@ def create_app(test_config=None):
     app.register_blueprint(auth.bp)
     app.register_blueprint(contacts.bp)
     app.register_blueprint(skills.bp)
-    app.register_blueprint(home.bp)
+    app.register_blueprint(index.bp)
 
     # blog is the main index
     app.add_url_rule('/', endpoint='index')

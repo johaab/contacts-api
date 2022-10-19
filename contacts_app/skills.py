@@ -5,6 +5,7 @@ from werkzeug.exceptions import abort
 
 from contacts_app.auth import login_required
 from contacts_app.db import get_db
+from contacts_app.forms import SkillsForm
 
 bp = Blueprint('skills', __name__, url_prefix='/skills')
 
@@ -12,42 +13,27 @@ bp = Blueprint('skills', __name__, url_prefix='/skills')
 @bp.route('/create', methods=('GET', 'POST'))
 @login_required
 def create():
+    form = SkillsForm()
     if request.method == 'POST':
-        name = request.form['name']
-        level = request.form['level']
-        error = None
-
-        skill_levels = ['Beginner', 'Intermediate', 'Advanced', 'Expert']
-        if not name:
-            error = 'Skill name is required.'
-        if not level:
-            error = 'Skill level is required.'
-        elif level.capitalize() not in skill_levels:
-            error = "Expected skill levels are: " + ', '.join(skill_levels)
-        name = name.capitalize()
-        level = level.capitalize()
-
-        if error is not None:
-            flash(error)
-        else:
+        if form.validate_on_submit():
             db = get_db()
             db.execute(
                 'INSERT INTO skills (name, level, user_id)'
                 ' VALUES (?, ?, ?)',
-                (name, level, g.user['id'])
+                (form.name.data.capitalize(), form.level.data, g.user['id'])
             )
             db.commit()
             return redirect(url_for('index'))
 
-    return render_template('skills/create.html')
+    return render_template('skills/create.html', form=form)
 
 
 def read(id, check_author=True):
     # input id is the skill id
     skill_info = get_db().execute(
-        'SELECT s.id, name, level, user_id'
-        ' FROM skills s JOIN user u ON s.user_id = u.id'
-        ' WHERE s.id = ?',
+        'SELECT id, name, level, user_id'
+        ' FROM skills'
+        ' WHERE id = ?',
         (id,)
     ).fetchone()
 
@@ -63,9 +49,9 @@ def read(id, check_author=True):
 def read_all(id, check_author=True):
     # input id is the user id
     skills_info = get_db().execute(
-        'SELECT s.id, name, level'
-        ' FROM skills s JOIN user u ON s.user_id = u.id'
-        ' WHERE s.user_id = ?',
+        'SELECT id, name, level'
+        ' FROM skills'
+        ' WHERE user_id = ?',
         (id,)
     ).fetchall()
 
@@ -78,43 +64,33 @@ def read_all(id, check_author=True):
     return skills_info
 
 
-@bp.route('skills/<int:id>/update', methods=('GET', 'POST'))
+@bp.route('/<int:id>/update', methods=('GET', 'POST'))
 @login_required
 def update(id):
     skill_info = read(id)
-
+    form = SkillsForm()
     if request.method == 'POST':
-        level = request.form['level']
-        error = None
-
-        skill_levels = ['Beginner', 'Intermediate', 'Advanced', 'Expert']
-        if not level:
-            error = 'Skill level is required.'
-        elif level.capitalize() not in skill_levels:
-            error = "Expected skill levels are: " + ', '.join(skill_levels)
-        level = level.capitalize()
-
-        if error is not None:
-            flash(error)
-        else:
+        if form.validate_on_submit():
             db = get_db()
             db.execute(
-                'UPDATE skills SET level = ?, user_id = ?'
+                'UPDATE skills SET level = ?'
                 ' WHERE id = ?',
-                (level, g.user['id'], id)
+                (form.level.data.capitalize(), id)
             )
             db.commit()
-            return redirect(url_for('index'))
+            return redirect(url_for('index.profile', id=g.user['id']))
 
-    return render_template('skills/update.html', skill=skill_info)
+    return render_template('skills/update.html', skill=skill_info, form=form)
 
 
-@bp.route('skills/<int:id>/delete', methods=('POST',))
+@bp.route('/<int:id>/delete', methods=('POST',))
 @login_required
 def delete(id):
     read(id)
     db = get_db()
-    db.execute('DELETE FROM skills WHERE id = ?', (id,))
+    db.execute('DELETE FROM skills'
+               ' WHERE id = ?',
+               (id,))
     db.commit()
     return redirect(url_for('index'))
 

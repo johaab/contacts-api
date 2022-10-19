@@ -1,20 +1,76 @@
 {% extends 'base.html' %}
 
 {% block header %}
-  <h1>{% block title %}Edit {{ g.user['username'] }} skills{% endblock %}</h1>
+  <h1>{% block title %}Edit {{ g.user['username'] }} contact information{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
   <form method="post">
-    <label for="name">Skill name</label>
-    <input name="name" id="name"
-           value="{{ request.form['name'] or skill['name']}}" required>
-    <label for="level">Skill level</label>
-    <input name="level" id="level"
-           value="{{ request.form['level'] or skill['level']}}" required>
+    {{ form.csrf_token }}
+
+    <p>
+        {{ form.firstname.label }}
+        {{ form.firstname(size=20, value=contact['firstname'])}}
+    </p>
+    {% if form.firstname.errors %}
+      <ul class="errors">
+          {% for error in form.firstname.errors %}
+              <li>{{ error }}</li>
+          {% endfor %}
+      </ul>
+    {% endif %}
+
+    <p>
+        {{ form.lastname.label }}
+        {{ form.lastname(size=20, value=contact['lastname']) }}
+    </p>
+    {% if form.lastname.errors %}
+      <ul class="errors">
+          {% for error in form.lastname.errors %}
+              <li>{{ error }}</li>
+          {% endfor %}
+      </ul>
+    {% endif %}
+
+    <p>
+        {{ form.address.label }}
+        {{ form.address(size=20, value=contact['address']) }}
+    </p>
+    {% if form.address.errors %}
+      <ul class="errors">
+          {% for error in form.address.errors %}
+              <li>{{ error }}</li>
+          {% endfor %}
+      </ul>
+    {% endif %}
+
+    <p>
+        {{ form.email.label }}
+        {{ form.email(size=20, value=contact['email']) }}
+    </p>
+    {% if form.email.errors %}
+      <ul class="errors">
+          {% for error in form.email.errors %}
+              <li>{{ error }}</li>
+          {% endfor %}
+      </ul>
+    {% endif %}
+
+    <p>
+        {{ form.phone.label }}
+        {{ form.phone(size=20, value=contact['phone']) }}
+    </p>
+    {% if form.phone.errors %}
+      <ul class="errors">
+          {% for error in form.phone.errors %}
+              <li>{{ error }}</li>
+          {% endfor %}
+      </ul>
+    {% endif %}
+    <input type="submit" value="Save">
   </form>
   <hr>
-  <form action="{{ url_for('skills.delete', id=skill['id']) }}" method="post">
+  <form action="{{ url_for('contacts.delete', id=contact['id']) }}" method="post">
     <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
   </form>
 {% endblock %}
