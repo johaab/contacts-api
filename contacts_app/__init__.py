@@ -1,5 +1,6 @@
 import os
 from flask import Flask
+from flask_session import Session
 from . import db, auth, contacts, skills, index
 
 
@@ -9,7 +10,10 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY='dev',  # switch to random value before deployment
         DATABASE=os.path.join(app.instance_path, 'contacts_app.sqlite'),
+        SESSION_PERMANENT=True,
+        SESSION_TYPE="filesystem"
     )
+    Session(app)
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
@@ -38,7 +42,7 @@ def create_app(test_config=None):
     app.register_blueprint(skills.bp)
     app.register_blueprint(index.bp)
 
-    # blog is the main index
+    # main index
     app.add_url_rule('/', endpoint='index')
 
     return app

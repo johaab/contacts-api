@@ -1,6 +1,7 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, session
 )
+from flask.json import jsonify
 from werkzeug.exceptions import abort
 
 from contacts_app.auth import login_required
@@ -18,23 +19,24 @@ def create():
     email = request.form['email']
     phone = request.form['phone']
     fullname = ' '.join([str(firstname), str(lastname)])
-    error = None
+    error = []
 
+    # TODO: more validation
     if not firstname:
-        error = 'First name is required.'
+        error.append('First name is required.')
     if not lastname:
-        error = 'Last name is required.'
+        error.append('Last name is required.')
     if not address:
-        error = 'Address is required.'
+        error.append('Address is required.')
     if not email:
-        error = 'Email address is required.'
+        error.append('Email address is required.')
     if not phone:
-        error = 'Phone number is required.'
+        error.append('Phone number is required.')
     elif not phone.isdecimal():
-        error = 'Unexpected phone number format'
+        error.append('Unexpected phone number format')
 
-    if error is not None:
-        return error
+    if error:
+        return jsonify(dict(zip([f'error_{i}' for i, _ in enumerate(error)], error)))
     else:
         db = get_db()
         db.execute(
@@ -43,7 +45,8 @@ def create():
             (firstname, lastname, fullname, address, email, phone, g.user['id'])
         )
         db.commit()
-        return "New contact information successfully added"
+        message = "New contact information successfully added"
+        return jsonify({'message': message}), 201
 
 
 @bp.route('', methods=('GET',))
@@ -52,7 +55,10 @@ def read():
         'SELECT c.id, username, firstname, lastname, fullname, address, email, phone'
         ' FROM contacts c JOIN user u ON c.user_id = u.id'
     ).fetchall()
-    return [dict(row) for row in contact_info]
+    if contact_info:
+        return jsonify([dict(row) for row in contact_info]), 200
+    else:
+        return None, 204
 
 
 @bp.route('/<int:id>', methods=('GET',))
@@ -64,8 +70,10 @@ def read_single(id):
         ' WHERE c.id = ?',
         (id,)
     ).fetchone()
-
-    return dict(contact_info)
+    if contact_info:
+        return jsonify(dict(contact_info)), 200
+    else:
+        return None, 204
 
 
 @bp.route('/<int:id>', methods=('PUT',))
@@ -77,21 +85,21 @@ def update(id):
     address = request.form['address']
     email = request.form('email')
     phone = request.form('phone')
-    error = None
+    error = []
 
     if not firstname:
-        error = 'First name is required.'
+        error.append('First name is required.')
     if not lastname:
-        error = 'Last name is required.'
+        error.append('Last name is required.')
     if not address:
-        error = 'Address is required.'
+        error.append('Address is required.')
     if not email:
-        error = 'Email address is required.'
+        error.append('Email address is required.')
     if not phone:
-        error = 'Phone number is required.'
+        error.append('Phone number is required.')
 
-    if error is not None:
-        return error
+    if error:
+        return jsonify(dict(zip([f'error_{i}' for i, _ in enumerate(error)], error))), 400
     else:
         db = get_db()
         db.execute(
@@ -100,8 +108,8 @@ def update(id):
             (firstname, lastname, fullname, address, email, phone, id)
         )
         db.commit()
-
-        return "Contact information successfully updated"
+        message = "Contact information successfully updated"
+        return jsonify({'message': message}), 201
 
 
 @login_required
@@ -130,5 +138,6 @@ def delete(id):
     db = get_db()
     db.execute('DELETE FROM contacts WHERE id = ?', (id,))
     db.commit()
-    return "Contact information successfully deleted"
+    message = "Contact information successfully deleted"
+    return jsonify({'message': message}), 200
 

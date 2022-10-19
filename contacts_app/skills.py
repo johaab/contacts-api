@@ -11,23 +11,24 @@ bp = Blueprint('skills', __name__, url_prefix='/skills')
 
 
 @bp.route('/<int:id>', methods=('POST',))
+@login_required
 def create(id):
     name = request.form['name']
     level = request.form['level']
-    error = None
+    error = []
 
     skill_levels = ['Beginner', 'Intermediate', 'Advanced', 'Expert']
     if not name:
-        error = 'Skill name is required.'
+        error.append('Skill name is required.')
     if not level:
-        error = 'Skill level is required.'
+        error.append('Skill level is required.')
     elif level.capitalize() not in skill_levels:
-        error = "Expected skill levels are: " + ', '.join(skill_levels)
+        error.append("Expected skill levels are: " + ', '.join(skill_levels))
     name = name.capitalize()
     level = level.capitalize()
 
-    if error is not None:
-        flash(error)
+    if error:
+        return jsonify(dict(zip([f'error_{i}' for i, _ in enumerate(error)], error)))
     else:
         db = get_db()
         db.execute(
@@ -36,7 +37,8 @@ def create(id):
             (name, level, id)
         )
         db.commit()
-        return f"New skill created successfully for user {id} by user {g.user['id']}"
+        message = "New skill created successfully"
+        return jsonify({'message': message}), 200
 
 
 @bp.route('', methods=('GET',))
@@ -47,7 +49,10 @@ def read():
         ' FROM skills s JOIN user u ON s.user_id = u.id'
     ).fetchall()
 
-    return [dict(row) for row in skill_info]
+    if skill_info:
+        return jsonify([dict(row) for row in skill_info]), 200
+    else:
+        return None, 204
 
 
 @bp.route('/<int:user_id>', methods=('GET',))
@@ -60,7 +65,10 @@ def read_single(user_id):
         (user_id,)
     ).fetchall()
 
-    return [dict(row) for row in skill_info]
+    if skill_info:
+        return jsonify([dict(row) for row in skill_info]), 200
+    else:
+        return None, 204
 
 
 @login_required
@@ -88,17 +96,17 @@ def update(id):
     skill_info = get_skill_info(id)
 
     level = request.form['level']
-    error = None
+    error = []
 
     skill_levels = ['Beginner', 'Intermediate', 'Advanced', 'Expert']
     if not level:
-        error = 'Skill level is required.'
+        error.append('Skill level is required.')
     elif level.capitalize() not in skill_levels:
-        error = "Expected skill levels are: " + ', '.join(skill_levels)
+        error.append("Expected skill levels are: " + ', '.join(skill_levels))
     level = level.capitalize()
 
-    if error is not None:
-        flash(error)
+    if error:
+        return jsonify(dict(zip([f'error_{i}' for i, _ in enumerate(error)], error)))
     else:
         db = get_db()
         db.execute(
@@ -107,7 +115,8 @@ def update(id):
             (level, g.user['id'], id)
         )
         db.commit()
-        return "Skill successfully updated"
+        message = "Skill successfully updated"
+        return jsonify({'message': message})
 
 
 @bp.route('/<int:user_id>/<int:skill_id>', methods=('DELETE',))
@@ -121,5 +130,6 @@ def delete(user_id, skill_id):
                ' AND id = ?',
                (user_id, skill_id))
     db.commit()
-    return f"Skill {skill_id} of user {user_id} successfully deleted"
+    message = "Skill successfully deleted"
+    return jsonify({'message': message})
 
