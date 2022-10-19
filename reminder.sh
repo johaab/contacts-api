@@ -8,6 +8,7 @@ pip install -r requirements.txt
 flask --app contacts_app init-db
 # run application
 flask --app contacts_app run
+flask run # requires FLASK_APP="contacts_app"
 
 # install (editable mode)
 pip install -e .
