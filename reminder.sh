@@ -8,6 +8,9 @@ pip install -r requirements.txt
 flask --app contacts_app init-db
 # run application
 flask --app contacts_app run
+flask run # (requires FLASK_APP="contacts_app")
+# run in shell
+flask shell
 
 # register
 curl -X POST -F username='john' -F password='johndoe' http://localhost:5000/auth/register
